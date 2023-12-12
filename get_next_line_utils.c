@@ -6,7 +6,7 @@
 /*   By: avialle- <avialle-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/09 17:06:32 by avialle-          #+#    #+#             */
-/*   Updated: 2023/12/09 17:06:32 by avialle-         ###   ########.fr       */
+/*   Updated: 2023/12/12 14:22:45 by avialle-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,14 +23,14 @@ void	ft_bzero(void *s, size_t n)
 		str[i] = 0;
 }
 
-size_t  ft_strlen(char *str)
+size_t	ft_strlen(char *str)
 {
-    int i;
+	size_t	i;
 
-    i = 0;
-    while (str[i])
-        i++;
-    return (i);
+	i = 0;
+	while (str[i])
+		i++;
+	return (i);
 }
 
 void	*ft_strdup(char *dest, char *src, int n)
@@ -49,28 +49,56 @@ void	*ft_strdup(char *dest, char *src, int n)
 	return (dest);
 }
 
-int  ft_lenLine(int fd)
+char	*ft_strjoin(char *line, char *buffer)
 {
-    int     i;
-    int     len;
-    char    buffer[1025];
+	size_t	i;
+	size_t	j;
+	size_t	len_total;
+	char	*dest;
 
-    i = 0;
-    len = 0;
-    ft_bzero(buffer, 1024);
-    while (i < 1)
-    {
-        if (read(fd, buffer, 1024) == -1)
-            return (-1);
-        printf("%s\n", buffer);
-        while (buffer[i] && buffer[i] != '\n')
-        {
-            len++;
-            i++;
-        }
-        if (buffer[i] == '\n')
-            return (len);
-        i = 0;
-    }
-    return (0);
+	len_total = ft_strlen(line) + ft_strlen(buffer);
+	dest = malloc((len_total + 1) * sizeof(char));
+	if (!dest)
+		return (NULL);
+	i = 0;
+	dest[len_total] = 0;
+	while (line[i])
+	{
+		dest[i] = line[i];
+		i++;
+	}
+	j = 0;
+	while (buffer[j])
+	{
+		dest[i] = buffer[j];
+		i++;
+		j++;
+	}
+	return (dest);
+}
+
+char	*rm_buffer(char *buffer)
+{
+	size_t	len_dest;
+	size_t	i;
+	size_t	j;
+	char	*dest;
+
+	i = 0;
+	while (buffer[i] != '\n')
+		i++;
+	len_dest = ft_strlen(buffer) - i;
+	dest = malloc((len_dest + 1) * sizeof(char));
+	if (!dest)
+		return (NULL);
+	dest[len_dest] = 0;
+	j = 0;
+	while (buffer[i])
+	{
+		dest[j] = buffer[i];
+		i++;
+		j++;
+	}
+	ft_bzero(buffer, BUFFER_SIZE);
+	return (dest);
 }
