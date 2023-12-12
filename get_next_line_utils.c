@@ -6,7 +6,7 @@
 /*   By: avialle- <avialle-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/09 17:06:32 by avialle-          #+#    #+#             */
-/*   Updated: 2023/12/12 14:22:45 by avialle-         ###   ########.fr       */
+/*   Updated: 2023/12/12 16:31:03 by avialle-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,26 +49,31 @@ void	*ft_strdup(char *dest, char *src, int n)
 	return (dest);
 }
 
-char	*ft_strjoin(char *line, char *buffer)
+char	*gnl_ft_strjoin(char *line, char *buffer, size_t len_buffer)
 {
 	size_t	i;
 	size_t	j;
+	size_t	len_line;
 	size_t	len_total;
 	char	*dest;
 
-	len_total = ft_strlen(line) + ft_strlen(buffer);
+	if (!line)
+		len_line = 0;
+	else
+		len_line = ft_strlen(line);
+	len_total = len_line + len_buffer;
 	dest = malloc((len_total + 1) * sizeof(char));
 	if (!dest)
-		return (NULL);
+		return (malloc(1));
 	i = 0;
 	dest[len_total] = 0;
-	while (line[i])
+	while (i < len_line)
 	{
 		dest[i] = line[i];
 		i++;
 	}
 	j = 0;
-	while (buffer[j])
+	while (j < len_buffer)
 	{
 		dest[i] = buffer[j];
 		i++;
@@ -85,6 +90,8 @@ char	*rm_buffer(char *buffer)
 	char	*dest;
 
 	i = 0;
+	if (buffer[0] == '\0')
+		return (NULL);
 	while (buffer[i] != '\n')
 		i++;
 	len_dest = ft_strlen(buffer) - i;
@@ -99,6 +106,5 @@ char	*rm_buffer(char *buffer)
 		i++;
 		j++;
 	}
-	ft_bzero(buffer, BUFFER_SIZE);
 	return (dest);
 }
