@@ -12,6 +12,23 @@
 
 #include "get_next_line.h"
 
+void	ft_putstr(char *str)
+{
+	int	i;
+
+	i = 0;
+	if (!str)
+	{
+		write(1, "(null)\n", 7);
+		return ;
+	}
+	while (str[i])
+	{
+		write(1, &str[i], 1);
+		i++;
+	}
+}
+
 int	check_backline(char *str)
 {
 	int	i;
@@ -21,6 +38,7 @@ int	check_backline(char *str)
 	{
 		if (str[i] == '\n')
 			return (1);
+		i++;
 	}
 	return (0);
 }
@@ -47,13 +65,11 @@ char	*extract_line(char *line, char *buffer, int bytes)
 
 char	*get_next_line(int fd)
 {
-	int			bytes;
-	int			verif;
+	static int	bytes;
 	static char	buffer[BUFFER_SIZE + 1];
 	char		*line;
 
-	buffer[BUFFER_SIZE] = 0;
-	line = rm_buffer(buffer);
+	line = rm_buffer(buffer, bytes);
 	if (!line)
 		line = malloc(sizeof(char));
 	bytes = 1;
@@ -66,9 +82,10 @@ char	*get_next_line(int fd)
 			return (NULL);
 		}
 		line = extract_line(line, buffer, bytes);
-		if (check_backline(line) || bytes < BUFFER_SIZE)
+		if (check_backline(buffer) == 1 || bytes < BUFFER_SIZE)
 			return (line);
 	}
+	return (NULL);
 }
 
 int	main(void)
@@ -81,6 +98,11 @@ int	main(void)
 	printf("%s", get_next_line(fd));
 	printf("%s", get_next_line(fd));
 	printf("%s", get_next_line(fd));
+	printf("%s", get_next_line(fd));
+	printf("%s", get_next_line(fd));
+	printf("%s", get_next_line(fd));
+	printf("%s", get_next_line(fd));
+	// printf("%s", get_next_line(fd));
 	close(fd);
 	return (0);
 }

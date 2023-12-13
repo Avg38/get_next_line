@@ -82,15 +82,15 @@ char	*gnl_ft_strjoin(char *line, char *buffer, size_t len_buffer)
 	return (dest);
 }
 
-char	*rm_buffer(char *buffer)
+char	*rm_buffer(char *buffer, int bytes)
 {
 	size_t	len_dest;
-	size_t	i;
+	int		i;
 	size_t	j;
 	char	*dest;
 
 	i = 0;
-	if (buffer[0] == '\0')
+	if (buffer[0] == '\0' || bytes < BUFFER_SIZE)
 		return (NULL);
 	while (buffer[i] != '\n')
 		i++;
@@ -106,5 +106,6 @@ char	*rm_buffer(char *buffer)
 		i++;
 		j++;
 	}
+	ft_bzero(buffer, BUFFER_SIZE + 1);
 	return (dest);
 }

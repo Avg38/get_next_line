@@ -26,6 +26,6 @@ char	*get_next_line(int fd);
 void	ft_bzero(void *s, size_t n);
 size_t	ft_strlen(char *str);
 char	*gnl_ft_strjoin(char *line, char *buffer, size_t len_buffer);
-char	*rm_buffer(char *buffer);
+char	*rm_buffer(char *buffer, int bytes);
 
 #endif
