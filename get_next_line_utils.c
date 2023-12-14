@@ -52,7 +52,6 @@ char	*ft_strjoin_gnl(char *line, char *buffer, size_t len_buffer)
 	if (!dest)
 		return (line);
 	i = 0;
-	dest[len_total] = 0;
 	while (i < len_line)
 	{
 		dest[i] = line[i];
@@ -65,6 +64,7 @@ char	*ft_strjoin_gnl(char *line, char *buffer, size_t len_buffer)
 		i++;
 		j++;
 	}
+	dest[i] = 0;
 	return (dest);
 }
 
@@ -97,11 +97,11 @@ char	*rm_buffer(char *buffer, int bytes)
 
 	i = 0;
 	if (buffer[0] == 0 || bytes < BUFFER_SIZE)
-	{
 		return (malloc(sizeof(char)));
-	}
 	while (buffer[i] && buffer[i] != '\n')
 		i++;
+	if (i == BUFFER_SIZE)
+		return (malloc(sizeof(char)));
 	i++;
 	buffer = update_buffer(buffer, &i);
 	dest = malloc((i + 1) * sizeof(char));

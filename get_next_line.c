@@ -87,38 +87,6 @@ char	*update_line(char *line)
 	return (dest);
 }
 
-// static char	*run_read(int fd, char *buffer, int bytes)
-// {
-// 	int		tmp_bytes;
-// 	char		*line;
-
-// 	line = rm_buffer(buffer, bytes);
-// 	if (!line)
-// 		return (NULL);
-// 	if (check_backline(line) == 1)
-// 		return (update_line(line));
-// 	bytes = 1;
-// 	while (bytes > 0)
-// 	{
-// 		bytes = read(fd, buffer, BUFFER_SIZE);
-// 		if (tmp_bytes == BUFFER_SIZE && bytes == 0)
-// 		{
-// 			return (line);
-// 		}
-// 		if (bytes == -1 || bytes == 0)
-// 		{
-// 			free(line);
-// 			return (NULL);
-// 		}
-// 		if (extract_line(&line, buffer, bytes) == 1)
-// 		{
-// 			return (line);
-// 		}
-// 		tmp_bytes = bytes;
-// 	}
-// 	return (NULL);
-// }
-
 char	*get_next_line(int fd)
 {
 	static char	buffer[BUFFER_SIZE + 1];
@@ -137,6 +105,7 @@ char	*get_next_line(int fd)
 		bytes = read(fd, buffer, BUFFER_SIZE);
 		if (tmp_bytes == BUFFER_SIZE && bytes == 0)
 		{
+
 			return (line);
 		}
 		if (bytes == -1 || bytes == 0)
