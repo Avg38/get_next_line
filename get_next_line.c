@@ -6,7 +6,7 @@
 /*   By: avialle- <avialle-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/09 16:52:59 by avialle-          #+#    #+#             */
-/*   Updated: 2023/12/12 16:54:46 by avialle-         ###   ########.fr       */
+/*   Updated: 2023/12/14 18:07:22 by avialle-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,10 @@ void	ft_putstr(char *str)
 	}
 	while (str[i])
 	{
-		write(1, &str[i], 1);
+		if (str[i] == '\n')
+			write(1, "\\\n", 2);
+		else
+			write(1, &str[i], 1);
 		i++;
 	}
 }
@@ -43,7 +46,7 @@ int	check_backline(char *str)
 	return (0);
 }
 
-char	*extract_line(char *line, char *buffer, int bytes)
+int	extract_line(char **line, char *buffer, int bytes)
 {
 	int	i;
 
@@ -52,38 +55,97 @@ char	*extract_line(char *line, char *buffer, int bytes)
 	{
 		if (buffer[i] == '\n')
 		{
-			line = gnl_ft_strjoin(line, buffer, i);
-			return (line);
+			*line = ft_strjoin_gnl(*line, buffer, i);
+			return (1);
 		}
 		i++;
 	}
-	line = gnl_ft_strjoin(line, buffer, bytes);
+	*line = ft_strjoin_gnl(*line, buffer, bytes);
 	if (bytes < BUFFER_SIZE)
-		return (line);
-	return (line);
+		return (1);
+	return (0);
 }
+
+char	*update_line(char *line)
+{
+	int		i;
+	char	*dest;
+
+	i = 0;
+	while (line[i] && line[i] != '\n')
+		i++;
+	dest = malloc((i + 1) * sizeof(char));
+	if (!dest)
+		return (NULL);
+	dest[i] = 0;
+	i = 0;
+	while (line[i] != '\n')
+	{
+		dest[i] = line[i];
+		i++;
+	}
+	return (dest);
+}
+
+// static char	*run_read(int fd, char *buffer, int bytes)
+// {
+// 	int		tmp_bytes;
+// 	char		*line;
+
+// 	line = rm_buffer(buffer, bytes);
+// 	if (!line)
+// 		return (NULL);
+// 	if (check_backline(line) == 1)
+// 		return (update_line(line));
+// 	bytes = 1;
+// 	while (bytes > 0)
+// 	{
+// 		bytes = read(fd, buffer, BUFFER_SIZE);
+// 		if (tmp_bytes == BUFFER_SIZE && bytes == 0)
+// 		{
+// 			return (line);
+// 		}
+// 		if (bytes == -1 || bytes == 0)
+// 		{
+// 			free(line);
+// 			return (NULL);
+// 		}
+// 		if (extract_line(&line, buffer, bytes) == 1)
+// 		{
+// 			return (line);
+// 		}
+// 		tmp_bytes = bytes;
+// 	}
+// 	return (NULL);
+// }
 
 char	*get_next_line(int fd)
 {
-	static int	bytes;
 	static char	buffer[BUFFER_SIZE + 1];
+	static int	bytes;
+	int			tmp_bytes;
 	char		*line;
 
 	line = rm_buffer(buffer, bytes);
 	if (!line)
-		line = malloc(sizeof(char));
+		return (NULL);
+	if (check_backline(line) == 1)
+		return (update_line(line));
 	bytes = 1;
 	while (bytes > 0)
 	{
 		bytes = read(fd, buffer, BUFFER_SIZE);
-		if (bytes == -1 || bytes == 0)
+		if (tmp_bytes == BUFFER_SIZE && bytes == 0)
 		{
-			free(line);
-			return (NULL);
-		}
-		line = extract_line(line, buffer, bytes);
-		if (check_backline(buffer) == 1 || bytes < BUFFER_SIZE)
 			return (line);
+		}
+		if (bytes == -1 || bytes == 0)
+			return (free(line), NULL);
+		if (extract_line(&line, buffer, bytes) == 1)
+		{
+			return (line);
+		}
+		tmp_bytes = bytes;
 	}
 	return (NULL);
 }
@@ -95,14 +157,28 @@ int	main(void)
 	fd = open("fichier.txt", O_RDONLY);
 	if (fd == -1)
 		return (1);
-	printf("%s", get_next_line(fd));
-	printf("%s", get_next_line(fd));
-	printf("%s", get_next_line(fd));
-	printf("%s", get_next_line(fd));
-	printf("%s", get_next_line(fd));
-	printf("%s", get_next_line(fd));
-	printf("%s", get_next_line(fd));
-	// printf("%s", get_next_line(fd));
+	// get_next_line(fd);
+	// get_next_line(fd);
+	// get_next_line(fd);
+	// get_next_line(fd);
+	// get_next_line(fd);
+	// get_next_line(fd);
+	// get_next_line(fd);
+	// get_next_line(fd);
+	// get_next_line(fd);
+	// get_next_line(fd);
+	
+	printf("%s\n", get_next_line(fd));
+	printf("%s\n", get_next_line(fd));
+	printf("%s\n", get_next_line(fd));
+	printf("%s\n", get_next_line(fd));
+	printf("%s\n", get_next_line(fd));
+	printf("%s\n", get_next_line(fd));
+	printf("%s\n", get_next_line(fd));
+	printf("%s\n", get_next_line(fd));
+	printf("%s\n", get_next_line(fd));
+	printf("%s\n", get_next_line(fd));
+	printf("%s\n", get_next_line(fd));
 	close(fd);
 	return (0);
 }
