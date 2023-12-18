@@ -6,7 +6,7 @@
 /*   By: avialle- <avialle-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/09 16:52:59 by avialle-          #+#    #+#             */
-/*   Updated: 2023/12/14 18:07:22 by avialle-         ###   ########.fr       */
+/*   Updated: 2023/12/18 15:53:42 by avialle-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void	ft_putstr(char *str)
 	}
 }
 
-int	check_backline(char *str)
+int	check_newline(char *str)
 {
 	int	i;
 
@@ -68,7 +68,7 @@ int	extract_line(char **line, char *buffer, int bytes)
 
 char	*update_line(char *line)
 {
-	int		i;
+	size_t	i;
 	char	*dest;
 
 	i = 0;
@@ -77,13 +77,15 @@ char	*update_line(char *line)
 	dest = malloc((i + 1) * sizeof(char));
 	if (!dest)
 		return (NULL);
-	dest[i] = 0;
 	i = 0;
 	while (line[i] != '\n')
 	{
 		dest[i] = line[i];
 		i++;
 	}
+	dest[i] = line[i];
+	i++;
+	dest[i] = 0;
 	return (dest);
 }
 
@@ -95,25 +97,20 @@ char	*get_next_line(int fd)
 	char		*line;
 
 	line = rm_buffer(buffer, bytes);
-	if (!line)
+	if (!line || BUFFER_SIZE < 1)
 		return (NULL);
-	if (check_backline(line) == 1)
+	if (check_newline(line) == 1)
 		return (update_line(line));
 	bytes = 1;
 	while (bytes > 0)
 	{
 		bytes = read(fd, buffer, BUFFER_SIZE);
 		if (tmp_bytes == BUFFER_SIZE && bytes == 0)
-		{
-
 			return (line);
-		}
 		if (bytes == -1 || bytes == 0)
 			return (free(line), NULL);
 		if (extract_line(&line, buffer, bytes) == 1)
-		{
 			return (line);
-		}
 		tmp_bytes = bytes;
 	}
 	return (NULL);
@@ -121,33 +118,20 @@ char	*get_next_line(int fd)
 
 int	main(void)
 {
-	int	fd;
+	int		fd;
+	char	*line;
+	int	i = 0;
 
 	fd = open("fichier.txt", O_RDONLY);
 	if (fd == -1)
 		return (1);
-	// get_next_line(fd);
-	// get_next_line(fd);
-	// get_next_line(fd);
-	// get_next_line(fd);
-	// get_next_line(fd);
-	// get_next_line(fd);
-	// get_next_line(fd);
-	// get_next_line(fd);
-	// get_next_line(fd);
-	// get_next_line(fd);
-	
-	printf("%s\n", get_next_line(fd));
-	printf("%s\n", get_next_line(fd));
-	printf("%s\n", get_next_line(fd));
-	printf("%s\n", get_next_line(fd));
-	printf("%s\n", get_next_line(fd));
-	printf("%s\n", get_next_line(fd));
-	printf("%s\n", get_next_line(fd));
-	printf("%s\n", get_next_line(fd));
-	printf("%s\n", get_next_line(fd));
-	printf("%s\n", get_next_line(fd));
-	printf("%s\n", get_next_line(fd));
+	while (i < 5)
+	{
+		line = get_next_line(fd);
+		printf("%s", line);
+		free(line);
+		i++;
+	}
 	close(fd);
 	return (0);
 }

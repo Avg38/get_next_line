@@ -6,36 +6,22 @@
 /*   By: avialle- <avialle-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/09 17:06:32 by avialle-          #+#    #+#             */
-/*   Updated: 2023/12/14 18:04:57 by avialle-         ###   ########.fr       */
+/*   Updated: 2023/12/18 15:48:30 by avialle-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-size_t	ft_strlen(char *str)
+size_t	ft_strlen_gnl(char *str)
 {
 	size_t	i;
 
 	i = 0;
-	while (str[i])
+	while (str[i] && str[i] != '\n')
+		i++;
+	if (str[i] == '\n')
 		i++;
 	return (i);
-}
-
-char	*ft_strdup(char *dest, char *src, int n)
-{
-	int	i;
-	int	len;
-
-	i = 0;
-	len = ft_strlen(dest);
-	while (src[i] && i <= n)
-	{
-		dest[len + i] = src[i];
-		i++;
-	}
-	dest[len + i] = 0;
-	return (dest);
 }
 
 char	*ft_strjoin_gnl(char *line, char *buffer, size_t len_buffer)
@@ -46,7 +32,7 @@ char	*ft_strjoin_gnl(char *line, char *buffer, size_t len_buffer)
 	size_t	len_line;
 	char	*dest;
 
-	len_line = ft_strlen(line);
+	len_line = ft_strlen_gnl(line);
 	len_total = len_line + len_buffer;
 	dest = malloc((len_total + 1) * sizeof(char));
 	if (!dest)
@@ -59,40 +45,32 @@ char	*ft_strjoin_gnl(char *line, char *buffer, size_t len_buffer)
 	}
 	j = 0;
 	while (j < len_buffer)
-	{
-		dest[i] = buffer[j];
-		i++;
-		j++;
-	}
+		dest[i++] = buffer[j++];
+	dest[i] = buffer[j];
+	i++;
 	dest[i] = 0;
 	return (dest);
 }
 
-char	*update_buffer(char *buffer, int *i)
+char	*update_buffer(char *buffer, size_t i)
 {
-	int	j;
+	size_t	j;
 
 	j = 0;
-	while (buffer[*i])
+	while (buffer[i])
 	{
-		buffer[j] = buffer[*i];
+		buffer[j] = buffer[i];
 		j++;
-		(*i)++;
+		i++;
 	}
-	while (buffer[j])
-	{
-		buffer[j] = 0;
-		j++;
-	}
-	*i = 0;
-	while (buffer[*i])
-		(*i)++;
+	buffer[j] = 0;
 	return (buffer);
 }
 
 char	*rm_buffer(char *buffer, int bytes)
 {
-	int		i;
+	size_t	i;
+	size_t	len;
 	char	*dest;
 
 	i = 0;
@@ -102,10 +80,17 @@ char	*rm_buffer(char *buffer, int bytes)
 		i++;
 	if (i == BUFFER_SIZE)
 		return (malloc(sizeof(char)));
-	i++;
-	buffer = update_buffer(buffer, &i);
+	buffer = update_buffer(buffer, i + 1);
 	dest = malloc((i + 1) * sizeof(char));
 	if (!dest)
 		return (NULL);
-	return (ft_strdup(dest, buffer, i));
+	i = 0;
+	len = ft_strlen_gnl(buffer);
+	while (i < len)
+	{
+		dest[i] = buffer[i];
+		i++;
+	}
+	dest[i] = 0;
+	return (dest);
 }
