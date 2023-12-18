@@ -6,31 +6,11 @@
 /*   By: avialle- <avialle-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/09 16:52:59 by avialle-          #+#    #+#             */
-/*   Updated: 2023/12/18 15:53:42 by avialle-         ###   ########.fr       */
+/*   Updated: 2023/12/18 16:45:29 by avialle-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-
-void	ft_putstr(char *str)
-{
-	int	i;
-
-	i = 0;
-	if (!str)
-	{
-		write(1, "(null)\n", 7);
-		return ;
-	}
-	while (str[i])
-	{
-		if (str[i] == '\n')
-			write(1, "\\\n", 2);
-		else
-			write(1, &str[i], 1);
-		i++;
-	}
-}
 
 int	check_newline(char *str)
 {
@@ -125,7 +105,7 @@ int	main(void)
 	fd = open("fichier.txt", O_RDONLY);
 	if (fd == -1)
 		return (1);
-	while (i < 5)
+	while (i < 10)
 	{
 		line = get_next_line(fd);
 		printf("%s", line);

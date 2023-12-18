@@ -6,7 +6,7 @@
 /*   By: avialle- <avialle-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/09 17:06:32 by avialle-          #+#    #+#             */
-/*   Updated: 2023/12/18 15:48:30 by avialle-         ###   ########.fr       */
+/*   Updated: 2023/12/18 16:45:47 by avialle-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,13 +28,11 @@ char	*ft_strjoin_gnl(char *line, char *buffer, size_t len_buffer)
 {
 	size_t	i;
 	size_t	j;
-	size_t	len_total;
 	size_t	len_line;
 	char	*dest;
 
 	len_line = ft_strlen_gnl(line);
-	len_total = len_line + len_buffer;
-	dest = malloc((len_total + 1) * sizeof(char));
+	dest = malloc((len_line + len_buffer + 1) * sizeof(char));
 	if (!dest)
 		return (line);
 	i = 0;
@@ -43,6 +41,7 @@ char	*ft_strjoin_gnl(char *line, char *buffer, size_t len_buffer)
 		dest[i] = line[i];
 		i++;
 	}
+	free(line);
 	j = 0;
 	while (j < len_buffer)
 		dest[i++] = buffer[j++];
@@ -63,7 +62,8 @@ char	*update_buffer(char *buffer, size_t i)
 		j++;
 		i++;
 	}
-	buffer[j] = 0;
+	while (j < BUFFER_SIZE)
+		buffer[j++] = 0;
 	return (buffer);
 }
 
