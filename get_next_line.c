@@ -6,7 +6,7 @@
 /*   By: avialle- <avialle-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/09 16:52:59 by avialle-          #+#    #+#             */
-/*   Updated: 2023/12/18 16:45:29 by avialle-         ###   ########.fr       */
+/*   Updated: 2023/12/19 16:41:09 by avialle-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,84 +17,93 @@ int	check_newline(char *str)
 	int	i;
 
 	i = 0;
-	while (str[i])
-	{
-		if (str[i] == '\n')
-			return (1);
+	while (str[i] && str[i] != '\n')
 		i++;
-	}
+	if (str[i] == '\n')
+		return (i + 1);
 	return (0);
 }
 
-int	extract_line(char **line, char *buffer, int bytes)
+char	*extract_line(char *line, char *buffer)
+{
+	int		i;
+	size_t	j;
+	size_t	len_buffer;
+	char	*dest;
+
+	len_buffer = ft_strlen_gnl(buffer);
+	dest = malloc((ft_strlen_gnl(line) + len_buffer + 1) * sizeof(char));
+	if (!dest)
+		return (free(line), NULL);
+	i = -1;
+	while (line[++i])
+		dest[i] = line[i];
+	free(line);
+	j = 0;
+	while (j < len_buffer && buffer[j - 1] != '\n')
+		dest[i++] = buffer[j++];
+	dest[i] = 0;
+	return (dest);
+}
+
+int	update_gnl(char *new_buffer, char *buffer, char **line)
 {
 	int	i;
 
 	i = 0;
 	while (buffer[i])
 	{
-		if (buffer[i] == '\n')
-		{
-			*line = ft_strjoin_gnl(*line, buffer, i);
-			return (1);
-		}
+		new_buffer[i] = buffer[i];
 		i++;
 	}
-	*line = ft_strjoin_gnl(*line, buffer, bytes);
-	if (bytes < BUFFER_SIZE)
-		return (1);
-	return (0);
+	new_buffer[i] = 0;
+	*line = extract_line(*line, new_buffer);
+	if (!*line)
+		return (-1);
+	return (1);
 }
 
-char	*update_line(char *line)
+char	*run_read(int fd, char *line, char *buffer)
 {
-	size_t	i;
-	char	*dest;
+	ssize_t	bytes;
 
-	i = 0;
-	while (line[i] && line[i] != '\n')
-		i++;
-	dest = malloc((i + 1) * sizeof(char));
-	if (!dest)
-		return (NULL);
-	i = 0;
-	while (line[i] != '\n')
+	bytes = 1;
+	while (bytes > 0)
 	{
-		dest[i] = line[i];
-		i++;
+		bytes = read(fd, buffer, BUFFER_SIZE);
+		if (bytes == -1)
+			break ;
+		buffer[bytes] = 0;
+		line = extract_line(line, buffer);
+		if (!line)
+			return (NULL);
+		if ((check_newline(line) > 0 || bytes == 0) && line[0] != 0)
+			return (line);
 	}
-	dest[i] = line[i];
-	i++;
-	dest[i] = 0;
-	return (dest);
+	buffer[0] = 0;
+	free(line);
+	return (NULL);
 }
 
 char	*get_next_line(int fd)
 {
 	static char	buffer[BUFFER_SIZE + 1];
-	static int	bytes;
-	int			tmp_bytes;
 	char		*line;
 
-	line = rm_buffer(buffer, bytes);
-	if (!line || BUFFER_SIZE < 1)
+	line = NULL;
+	line = str_init(line);
+	if (!line)
 		return (NULL);
-	if (check_newline(line) == 1)
-		return (update_line(line));
-	bytes = 1;
-	while (bytes > 0)
-	{
-		bytes = read(fd, buffer, BUFFER_SIZE);
-		if (tmp_bytes == BUFFER_SIZE && bytes == 0)
-			return (line);
-		if (bytes == -1 || bytes == 0)
-			return (free(line), NULL);
-		if (extract_line(&line, buffer, bytes) == 1)
-			return (line);
-		tmp_bytes = bytes;
-	}
-	return (NULL);
+	if (fd < 0 || BUFFER_SIZE < 1
+		|| update_gnl(buffer, &buffer[check_newline(buffer)], &line) < 0)
+		return (free(line), NULL);
+	if (check_newline(buffer) > 0)
+		return (line);
+	return (run_read(fd, line, buffer));
 }
+
+# include <stdio.h>
+# include <fcntl.h>
 
 int	main(void)
 {
@@ -105,12 +114,10 @@ int	main(void)
 	fd = open("fichier.txt", O_RDONLY);
 	if (fd == -1)
 		return (1);
-	while (i < 10)
+	while ((line = get_next_line(fd)) != NULL)
 	{
-		line = get_next_line(fd);
-		printf("%s", line);
+		printf("line = %s", line);
 		free(line);
-		i++;
 	}
 	close(fd);
 	return (0);
