@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: avialle- <avialle-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/09 16:52:59 by avialle-          #+#    #+#             */
-/*   Updated: 2023/12/21 11:14:15 by avialle-         ###   ########.fr       */
+/*   Updated: 2023/12/21 14:15:07 by avialle-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 size_t	check_newline(char *str)
 {
@@ -87,15 +87,20 @@ char	*run_read(int fd, char *line, char *buffer)
 
 char	*get_next_line(int fd)
 {
-	static char	buffer[BUFFER_SIZE + 1];
+	static t_fd	buffer_memory[MAX_FD];
+	char		*buffer;
 	char		*line;
 
+	if (fd < 0 || BUFFER_SIZE < 1 || MAX_FD < 1)
+		return (NULL);
 	line = NULL;
 	line = str_init(line);
 	if (!line)
 		return (NULL);
-	if (fd < 0 || BUFFER_SIZE < 1
-		|| update_gnl(buffer, &buffer[check_newline(buffer)], &line) < 0)
+	buffer = buffer_init(fd, buffer_memory);
+	if (!buffer)
+		return (NULL);
+	if (update_gnl(buffer, &buffer[check_newline(buffer)], &line) < 0)
 		return (free(line), NULL);
 	if (check_newline(buffer) > 0)
 		return (line);
